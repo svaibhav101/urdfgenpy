@@ -1,0 +1,11 @@
+[project]
+name = "urdfgenpy"
+version = "0.1.0"
+description = "Programmatically generating URDF and Xacro robot description files"
+readme = "README.md"
+authors = [{ name = "Vaibhav Shende" , email = "48331600+svaibhav101@users.noreply.github.com" }]
+license = { file = "LICENSE" }
+
+keywords = ["urdf", "xacro", "sdf", "ros", "ros 2", "robotics", "urdf-generator"]
+dependencies = []
+requires-python = ">=3.10"
