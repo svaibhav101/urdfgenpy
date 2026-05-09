@@ -8,3 +8,4 @@ from .inertia import (
 )
 from .joint import Joint, JointDynamics, JointLimit, JointMimic
 from .link import Link
+from .robot import Robot
