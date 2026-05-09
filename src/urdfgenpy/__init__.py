@@ -7,3 +7,4 @@ from .inertia import (
     sphere_inertia,
 )
 from .joint import Joint, JointDynamics, JointLimit, JointMimic
+from .link import Link
