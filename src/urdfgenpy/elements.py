@@ -1,3 +1,5 @@
+#!/usr/bin/env python3
+
 """URDF element types: Origin, Material, Visual, Collision, Inertial."""
 
 # --- std
@@ -7,6 +9,13 @@ from typing import Optional, Tuple, Union
 
 # --- user
 from .geometry import Box, Cylinder, Sphere
+from .inertia import (
+    DEFAULT_INERTIA_MULTIPLY,
+    InertiaMatrix,
+    box_inertia,
+    cylinder_inertia,
+    sphere_inertia,
+)
 
 Geometry = Union[Box, Cylinder, Sphere]
 
@@ -146,3 +155,70 @@ class Collision:
         lines.append(f'{indent}</collision>')
         return "\n".join(lines)
 
+
+
+@dataclass
+class Inertial:
+    """Mass and inertia of a link.
+
+    Prefer the factory class methods over direct construction:
+
+    * :meth:'from_geometry' - auto-dispatch from any supported geometry
+    * :meth:'from_box', :meth:'from_cylinder', :meth:'from_sphere'
+
+    Args:
+        mass: Mass in kg.
+        matrix: 3x3 symmetric inertia tensor (upper triangle).
+        origin: Pose of the centre of mass relative to the link frame.
+    """
+
+    mass: float
+    matrix: InertiaMatrix
+    origin: Origin = field(default_factory=Origin)
+
+    @classmethod
+    def from_box(cls, mass: float, length: float, w: float, h: float,
+                 origin: Optional[Origin] = None,
+                 inertia_multiply: float = DEFAULT_INERTIA_MULTIPLY) -> "Inertial":
+        return cls(mass=mass, matrix=box_inertia(mass, length, w, h, inertia_multiply),
+                   origin=origin or Origin())
+
+    @classmethod
+    def from_sphere(cls, mass: float, radius: float,
+                    origin: Optional[Origin] = None,
+                    inertia_multiply: float = DEFAULT_INERTIA_MULTIPLY) -> "Inertial":
+        return cls(mass=mass, matrix=sphere_inertia(mass, radius, inertia_multiply),
+                   origin=origin or Origin())
+
+    @classmethod
+    def from_cylinder(cls, mass: float, radius: float, length: float,
+                      origin: Optional[Origin] = None,
+                      inertia_multiply: float = DEFAULT_INERTIA_MULTIPLY) -> "Inertial":
+        return cls(mass=mass, matrix=cylinder_inertia(mass, radius, length, inertia_multiply),
+                   origin=origin or Origin())
+
+    @classmethod
+    def from_geometry(cls, mass: float, geometry: Geometry,
+                      origin: Optional[Origin] = None,
+                      inertia_multiply: float = DEFAULT_INERTIA_MULTIPLY) -> "Inertial":
+        """Auto-compute inertia from a geometry object."""
+        if isinstance(geometry, Box):
+            return cls.from_box(mass, geometry.length, geometry.width,
+                                geometry.height, origin, inertia_multiply)
+        elif isinstance(geometry, Sphere):
+            return cls.from_sphere(mass, geometry.radius, origin, inertia_multiply)
+        elif isinstance(geometry, Cylinder):
+            return cls.from_cylinder(mass, geometry.radius, geometry.length,
+                                     origin, inertia_multiply)
+        raise ValueError(
+            f"Cannot auto-compute inertia for {type(geometry).__name__}. "
+            "Provide an InertiaMatrix manually."
+        )
+
+    def to_xml(self, indent: str = "") -> str:
+        lines = [f'{indent}<inertial>']
+        lines.append(self.origin.to_xml(indent + "    "))
+        lines.append(f'{indent}    <mass value="{self.mass}"/>')
+        lines.append(self.matrix.to_xml(indent + "    "))
+        lines.append(f'{indent}</inertial>')
+        return "\n".join(lines)

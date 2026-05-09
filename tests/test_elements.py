@@ -1,6 +1,8 @@
+# --- std
 import math
 
-from urdfgenpy import Box, Collision, Cylinder, Material, Origin, Sphere, Visual
+# --- usr
+from urdfgenpy import Box, Collision, Cylinder, Inertial, Material, Origin, Sphere, Visual
 
 
 class TestOrigin:
@@ -91,4 +93,38 @@ class TestCollision:
         assert "<box" in xml
 
 
+
+class TestInertial:
+    def test_from_box(self):
+        inert = Inertial.from_box(1.0, 0.2, 0.2, 0.1)
+        assert inert.mass == 1.0
+        xml = inert.to_xml()
+        assert "<inertial>" in xml
+        assert "<mass" in xml
+        assert "<inertia" in xml
+
+    def test_from_sphere(self):
+        inert = Inertial.from_sphere(0.5, 0.1)
+        assert math.isclose(inert.matrix.ixx, inert.matrix.izz)
+
+    def test_from_cylinder(self):
+        inert = Inertial.from_cylinder(1.0, 0.05, 0.2)
+        assert inert.mass == 1.0
+
+    def test_from_geometry_box(self):
+        b = Box(0.1, 0.1, 0.1)
+        inert = Inertial.from_geometry(1.0, b)
+        assert inert.mass == 1.0
+
+    def test_from_geometry_sphere(self):
+        s = Sphere(0.1)
+        inert = Inertial.from_geometry(0.5, s)
+        assert math.isclose(inert.matrix.ixx, inert.matrix.iyy)
+
+    def test_from_geometry_cylinder(self):
+        c = Cylinder(0.05, 0.2)
+        inert = Inertial.from_geometry(1.0, c)
+        assert inert.mass == 1.0
+
+   
 

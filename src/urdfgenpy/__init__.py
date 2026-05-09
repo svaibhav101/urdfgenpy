@@ -1,5 +1,5 @@
 from .geometry import Box, Cylinder, Sphere
-from .elements import Collision, Material, Origin, Visual
+from .elements import Collision, Material, Origin, Visual, Inertial
 from .inertia import (
     InertiaMatrix,
     box_inertia,
