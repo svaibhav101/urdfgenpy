@@ -116,3 +116,23 @@ class TestXacroExport:
         _make_robot().save(str(out))
         assert out.exists()
 
+
+
+class TestTreeString:
+    def test_tree_contains_robot_name(self):
+        tree = _make_robot().tree_string()
+        assert "test_bot" in tree
+
+    def test_tree_contains_links(self):
+        tree = _make_robot().tree_string()
+        assert "base_link" in tree
+        assert "arm_link" in tree
+
+    def test_tree_contains_joint(self):
+        tree = _make_robot().tree_string()
+        assert "base_arm" in tree
+
+    def test_save_tree(self, tmp_path):
+        out = tmp_path / "tree.txt"
+        _make_robot().save_tree(str(out))
+        assert "test_bot" in out.read_text()

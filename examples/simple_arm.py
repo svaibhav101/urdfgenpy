@@ -190,8 +190,10 @@ os.makedirs(out_dir, exist_ok=True)
 
 robot.save(os.path.join(out_dir, f"{robot.name}.urdf"))
 robot.save(os.path.join(out_dir, f"{robot.name}.xacro"))
+robot.save_tree(os.path.join(out_dir, f"{robot.name}_tree.txt"))
 
 print(f"Links : {len(robot.links)}")
 print(f"Joints: {len(robot.joints)}")
 print(f"urdf saved: {out_dir}")
 print(f"xacro saved: {out_dir}")
+print(f"tree saved: {out_dir}")

@@ -102,3 +102,50 @@ class Robot:
             self.to_xacro(output_path)
         else:
             self.to_urdf(output_path)
+
+    def tree_string(self) -> str:
+        """Return the kinematic chain as a plain-text ASCII tree."""
+        
+        children: dict = {n: [] for n in self._links}
+        child_set: set = set()
+        for j in self._joints.values():
+            children[j.parent].append((j.name, j.child))
+            child_set.add(j.child)
+
+        roots = [n for n in self._links if n not in child_set]
+        lines: list = []
+
+        def _geom(link_name: str) -> str:
+            lnk = self._links[link_name]
+            return f" ({lnk.visuals[0].geometry.shape})" if lnk.visuals else ""
+
+        def render(link_name: str, prefix: str) -> None:
+            for i, (jname, cname) in enumerate(children[link_name]):
+                is_last      = i == len(children[link_name]) - 1
+                child_has_ch = bool(children[cname])
+                use_tee = (not is_last) or child_has_ch
+                conn = "+--" if use_tee else "\\--"
+
+                joint = self._joints[jname]
+                lines.append(f"{prefix}{conn} joint {jname}  [{joint.joint_type}]")
+                lines.append(f"{prefix}{'|' if use_tee else ' '}   \\-- link  {cname}{_geom(cname)}")
+
+                if child_has_ch:
+                    lines.append(f"{prefix}{'|' if use_tee else ' '}")
+                    render(cname, prefix + ("|   " if use_tee else "    ") + "    ")
+                elif not is_last:
+                    lines.append(f"{prefix}|")
+
+        lines.append(f"\nRobot: {self.name}\n")
+        for root in roots:
+            lines.append(f"*  link  {root}{_geom(root)}")
+            if children[root]:
+                lines.append("|")
+                render(root, "")
+
+        return "\n".join(lines) + "\n"
+
+    def save_tree(self, output_path: str) -> None:
+        """Write the plain-text kinematic tree to a file."""
+        with open(output_path, "w") as f:
+            f.write(self.tree_string())

@@ -1,0 +1,16 @@
+
+Robot: simple_arm
+
+*  link  base_link (box)
+|
++-- joint base_shoulder_joint  [revolute]
+|   \-- link  shoulder_link (cylinder)
+|
+|       +-- joint shoulder_upper_arm_joint  [revolute]
+|       |   \-- link  upper_arm_link (cylinder)
+|       |
+|       |       +-- joint upper_arm_forearm_joint  [revolute]
+|       |       |   \-- link  forearm_link (cylinder)
+|       |       |
+|       |       |       \-- joint forearm_ee_joint  [fixed]
+|       |       |           \-- link  end_effector_link (sphere)
