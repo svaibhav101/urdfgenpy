@@ -68,3 +68,51 @@ class TestRobotBuilding:
         r = Robot("r")
         r.add_material(Material("blue", rgba=(0, 0, 1, 1)))
         assert len(r.materials) == 1
+
+
+class TestURDFExport:
+    def test_header(self):
+        xml = _make_robot().to_urdf()
+        assert '<?xml version="1.0"?>' in xml
+
+    def test_robot_name(self):
+        xml = _make_robot().to_urdf()
+        assert 'name="test_bot"' in xml
+
+    def test_contains_links(self):
+        xml = _make_robot().to_urdf()
+        assert 'name="base_link"' in xml
+        assert 'name="arm_link"' in xml
+
+    def test_contains_joint(self):
+        xml = _make_robot().to_urdf()
+        assert 'name="base_arm"' in xml
+
+    def test_write_file(self, tmp_path):
+        out = tmp_path / "robot.urdf"
+        _make_robot().to_urdf(str(out))
+        assert out.exists()
+        content = out.read_text()
+        assert "<robot" in content
+
+    def test_save_urdf(self, tmp_path):
+        out = tmp_path / "robot.urdf"
+        _make_robot().save(str(out))
+        assert "<?xml" in out.read_text()
+
+
+class TestXacroExport:
+    def test_xacro_header(self):
+        xml = _make_robot().to_xacro()
+        assert "xacro" in xml.lower()
+
+    def test_write_file(self, tmp_path):
+        out = tmp_path / "robot.xacro"
+        _make_robot().to_xacro(str(out))
+        assert out.exists()
+
+    def test_save_xacro(self, tmp_path):
+        out = tmp_path / "robot.xacro"
+        _make_robot().save(str(out))
+        assert out.exists()
+

@@ -1,7 +1,7 @@
 """Top-level robot assembly."""
 
 # --- std
-from typing import Dict, List
+from typing import Dict, List, Optional
 
 # --- user
 from .elements import Material
@@ -78,4 +78,27 @@ class Robot:
             raise KeyError(f"Joint '{name}' not found.")
         return self._joints[name]
 
-    
+    # --- export ---
+
+    def to_urdf(self, output_path: Optional[str] = None) -> str:
+        from .exporters.urdf import URDFExporter
+        xml = URDFExporter().export(self)
+        if output_path:
+            with open(output_path, "w") as f:
+                f.write(xml)
+        return xml
+
+    def to_xacro(self, output_path: Optional[str] = None) -> str:
+        from .exporters.xacro import XacroExporter
+        xml = XacroExporter().export(self)
+        if output_path:
+            with open(output_path, "w") as f:
+                f.write(xml)
+        return xml
+
+    def save(self, output_path: str) -> None:
+        """Infer format from file extension (.urdf or .xacro)."""
+        if output_path.endswith(".xacro"):
+            self.to_xacro(output_path)
+        else:
+            self.to_urdf(output_path)
