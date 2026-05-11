@@ -1,0 +1,16 @@
+
+Robot: hobu
+
+*  link  base_footprint
+|
++-- joint base_joint  [fixed]
+|   \-- link  base_link (box)
+|
+|       +-- joint base_right_wheel_joint  [continuous]
+|       |   \-- link  right_wheel_link (cylinder)
+|       |
+|       +-- joint base_left_wheel_joint  [continuous]
+|       |   \-- link  left_wheel_link (cylinder)
+|       |
+|       \-- joint base_caster_wheel_joint  [fixed]
+|           \-- link  caster_wheel_link (sphere)
