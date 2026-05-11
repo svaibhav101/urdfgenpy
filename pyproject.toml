@@ -1,11 +1,97 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
 [project]
 name = "urdfgenpy"
 version = "0.3.0"
-description = "Programmatically generating URDF and Xacro robot description files"
+description = "Programmatically generate URDF and Xacro robot description files"
 readme = "README.md"
-authors = [{ name = "Vaibhav Shende" , email = "48331600+svaibhav101@users.noreply.github.com" }]
+authors = [{ name = "Vaibhav Shende", email = "48331600+svaibhav101@users.noreply.github.com" }]
 license = { file = "LICENSE" }
-
-keywords = ["urdf", "xacro", "sdf", "ros", "ros 2", "robotics", "urdf-generator"]
-dependencies = []
 requires-python = ">=3.10"
+dependencies = []
+
+keywords = ["urdf", "xacro", "ros", "ros2", "robotics", "urdf-generator", "robot-description"]
+
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Intended Audience :: Developers",
+    "Intended Audience :: Science/Research",
+    "License :: OSI Approved :: MIT License",
+    "Natural Language :: English",
+    "Operating System :: OS Independent",
+    "Programming Language :: Python",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Topic :: Scientific/Engineering",
+    "Topic :: Software Development :: Libraries :: Python Modules",
+]
+
+[project.urls]
+Homepage = "https://github.com/svaibhav101/urdfgenpy"
+"Bug Tracker" = "https://github.com/svaibhav101/urdfgenpy/issues"
+
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=7.0",
+    "pytest-cov",
+    "ruff>=0.4",
+    "mypy>=1.0",
+]
+docs = [
+    "sphinx>=7.4",
+    "furo>=2024.1.29",
+    "myst-parser>=3.0",
+    "sphinx-copybutton>=0.5",
+    "sphinx-autodoc-typehints>=2.0",
+    "sphinx-design>=0.6",
+]
+
+[tool.setuptools]
+package-dir = {"" = "src"}
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+
+[tool.coverage.run]
+source = ["src/urdfgenpy"]
+
+[tool.coverage.report]
+show_missing = true
+
+[tool.ruff]
+target-version = "py310"
+line-length = 99
+
+[tool.ruff.lint]
+select = [
+    "E", "W",   # pycodestyle
+    "F",        # pyflakes
+    "I",        # isort
+    "UP",       # pyupgrade
+    "B",        # flake8-bugbear
+    "C4",       # flake8-comprehensions
+    "SIM",      # flake8-simplify
+]
+ignore = ["E501"]  # line length handled by formatter
+
+[tool.ruff.format]
+quote-style = "double"
+indent-style = "space"
+line-ending = "auto"
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = "-v --tb=short"
+
+[tool.mypy]
+python_version = "3.10"
+strict = false
+warn_unused_ignores = true
+warn_return_any = true
+files = ["src/urdfgenpy"]
