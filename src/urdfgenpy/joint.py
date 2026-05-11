@@ -1,8 +1,10 @@
+#!/usr/bin/env python3
+
 """Joint elements for URDF robot descriptions."""
 
 # --- std
 from dataclasses import dataclass, field
-from typing import Literal, Optional, Tuple
+from typing import Literal
 
 # --- user
 from .elements import Origin
@@ -28,6 +30,14 @@ class JointLimit:
     velocity: float = 0.0
 
     def to_xml(self, indent: str = "") -> str:
+        """Return the '<limit>' XML element string.
+
+        Args:
+            indent: Leading whitespace prepended to the element.
+
+        Returns:
+            A single-line '<limit ... />' XML string.
+        """
         return (
             f'{indent}<limit lower="{self.lower}" upper="{self.upper}" '
             f'effort="{self.effort}" velocity="{self.velocity}"/>'
@@ -47,9 +57,15 @@ class JointDynamics:
     friction: float = 0.0
 
     def to_xml(self, indent: str = "") -> str:
-        return (
-            f'{indent}<dynamics damping="{self.damping}" friction="{self.friction}"/>'
-        )
+        """Return the '<dynamics>' XML element string.
+
+        Args:
+            indent: Leading whitespace prepended to the element.
+
+        Returns:
+            A single-line '<dynamics ... />' XML string.
+        """
+        return f'{indent}<dynamics damping="{self.damping}" friction="{self.friction}"/>'
 
 
 @dataclass
@@ -67,6 +83,14 @@ class JointMimic:
     offset: float = 0.0
 
     def to_xml(self, indent: str = "") -> str:
+        """Return the '<mimic>' XML element string.
+
+        Args:
+            indent: Leading whitespace prepended to the element.
+
+        Returns:
+            A single-line '<mimic ... />' XML string.
+        """
         return (
             f'{indent}<mimic joint="{self.joint}" '
             f'multiplier="{self.multiplier}" offset="{self.offset}"/>'
@@ -95,12 +119,20 @@ class Joint:
     parent: str
     child: str
     origin: Origin = field(default_factory=Origin)
-    axis: Tuple[float, float, float] = (1.0, 0.0, 0.0)
-    limit: Optional[JointLimit] = None
-    dynamics: Optional[JointDynamics] = None
-    mimic: Optional[JointMimic] = None
+    axis: tuple[float, float, float] = (1.0, 0.0, 0.0)
+    limit: JointLimit | None = None
+    dynamics: JointDynamics | None = None
+    mimic: JointMimic | None = None
 
     def to_xml(self, indent: str = "") -> str:
+        """Return the '<joint>' XML block string.
+
+        Args:
+            indent: Leading whitespace prepended to each line.
+
+        Returns:
+            A multi-line '<joint>...</joint>' XML string.
+        """
         lines = [f'{indent}<joint name="{self.name}" type="{self.joint_type}">']
         lines.append(self.origin.to_xml(indent + "    "))
         lines.append(f'{indent}    <parent link="{self.parent}"/>')

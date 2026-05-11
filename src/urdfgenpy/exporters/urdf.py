@@ -4,6 +4,7 @@
 
 # --- std
 from __future__ import annotations
+
 from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
@@ -14,8 +15,17 @@ _HEADER = '<?xml version="1.0"?>'
 
 class URDFExporter:
     """Converts a :class:'~urdfgenpy.Robot' to a URDF XML string."""
-    
+
     def export(self, robot: Robot) -> str:
+        """Render *robot* as a URDF XML string.
+
+        Args:
+            robot: The :class:'~urdfgenpy.Robot' to serialize.
+
+        Returns:
+            A complete, well-formed URDF XML string including the XML
+            declaration and '<robot>' root element.
+        """
         lines = [
             _HEADER,
             f'<robot name="{robot.name}">',

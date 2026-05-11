@@ -5,7 +5,6 @@
 # --- std
 import math
 from dataclasses import dataclass, field
-from typing import Optional, Tuple, Union
 
 # --- user
 from .geometry import Box, Cylinder, Sphere
@@ -17,36 +16,57 @@ from .inertia import (
     sphere_inertia,
 )
 
-Geometry = Union[Box, Cylinder, Sphere]
+Geometry = Box | Cylinder | Sphere
 
 
 @dataclass
 class Origin:
-    """
-    Pose of a link or joint relative to its parent frame.
+    """Pose of a link or joint relative to its parent frame.
 
     Args:
         xyz: (x, y, z) translation in metres.
         rpy: (roll, pitch, yaw) rotation in radians.
     """
 
-    xyz: Tuple[float, float, float] = (0.0, 0.0, 0.0)
-    rpy: Tuple[float, float, float] = (0.0, 0.0, 0.0)
+    xyz: tuple[float, float, float] = (0.0, 0.0, 0.0)
+    rpy: tuple[float, float, float] = (0.0, 0.0, 0.0)
 
     def to_xml(self, indent: str = "") -> str:
+        """Return the '<origin>' XML attribute string.
+
+        Args:
+            indent: Leading whitespace prepended to the element.
+
+        Returns:
+            A single-line '<origin xyz="..." rpy="..."/>' XML string.
+        """
         x, y, z = self.xyz
         r, p, yw = self.rpy
         return f'{indent}<origin xyz="{x} {y} {z}" rpy="{r} {p} {yw}"/>'
 
     @classmethod
-    def above(cls, geometry: Geometry,
-              xy: Tuple[float, float] = (0.0, 0.0),
-              rpy: Tuple[float, float, float] = (0.0, 0.0, 0.0)) -> "Origin":
-        """
-        Return an origin that lifts geometry so its bottom sits at z=0.
+    def above(
+        cls,
+        geometry: Geometry,
+        xy: tuple[float, float] = (0.0, 0.0),
+        rpy: tuple[float, float, float] = (0.0, 0.0, 0.0),
+    ) -> "Origin":
+        """Return an origin that lifts geometry so its bottom sits at z=0.
 
-        Works for Box (half height), Cylinder (half length), Sphere (radius).
-        The optional xy offset and rpy are passed through unchanged.
+        Computes the Z offset as half the height for a :class:'~urdfgenpy.Box',
+        half the length for a :class:'~urdfgenpy.Cylinder', or the radius for a
+        :class:'~urdfgenpy.Sphere'.
+
+        Args:
+            geometry: A :class:'Box', :class:'Cylinder', or :class:'Sphere' instance.
+            xy: Optional (x, y) translation in metres (default '(0, 0)').
+            rpy: Optional (roll, pitch, yaw) rotation in radians (default '(0, 0, 0)').
+
+        Returns:
+            An :class:'Origin' with Z set so the geometry rests on the XY plane.
+
+        Raises:
+            ValueError: If *geometry* is not a supported primitive type.
         """
         if isinstance(geometry, Box):
             z = geometry.height / 2.0
@@ -62,21 +82,26 @@ class Origin:
         return cls(xyz=(xy[0], xy[1], z), rpy=rpy)
 
     @classmethod
-    def wheel(cls, xy: Tuple[float, float] = (0.0, 0.0),
-              z: float = 0.0) -> "Origin":
-        """
-        Return an origin with -pi/2 roll so a URDF cylinder becomes a wheel.
+    def wheel(cls, xy: tuple[float, float] = (0.0, 0.0), z: float = 0.0) -> "Origin":
+        """Return an origin with −π/2 roll so a URDF cylinder becomes a wheel.
 
-        URDF cylinders default to Z-axis; this rotation orients the axis to Y
-        so the wheel disc lies in the XZ plane and rolls in the X direction.
+        URDF cylinders default to the Z axis; applying −π/2 roll reorients the
+        symmetry axis to Y so the wheel disc lies in the XZ plane and rolls in
+        the X direction.
+
+        Args:
+            xy: (x, y) position of the wheel centre in metres (default '(0, 0)').
+            z: Height of the wheel centre in metres (default '0').
+
+        Returns:
+            An :class:'Origin' with 'rpy = (-π/2, 0, 0)'.
         """
         return cls(xyz=(xy[0], xy[1], z), rpy=(-math.pi / 2.0, 0.0, 0.0))
 
 
 @dataclass
 class Material:
-    """
-    Visual material — colour or texture.
+    """Visual material — colour or texture.
 
     Args:
         name: Unique material name referenced by :class:'Visual'.
@@ -85,24 +110,31 @@ class Material:
     """
 
     name: str
-    rgba: Optional[Tuple[float, float, float, float]] = None
-    texture: Optional[str] = None
+    rgba: tuple[float, float, float, float] | None = None
+    texture: str | None = None
 
     def to_xml(self, indent: str = "") -> str:
+        """Return the '<material>' XML block string.
+
+        Args:
+            indent: Leading whitespace prepended to each line.
+
+        Returns:
+            A multi-line '<material>...</material>' XML string.
+        """
         lines = [f'{indent}<material name="{self.name}">']
         if self.rgba is not None:
             r, g, b, a = self.rgba
             lines.append(f'{indent}    <color rgba="{r} {g} {b} {a}"/>')
         if self.texture is not None:
             lines.append(f'{indent}    <texture filename="{self.texture}"/>')
-        lines.append(f'{indent}</material>')
+        lines.append(f"{indent}</material>")
         return "\n".join(lines)
 
 
 @dataclass
 class Visual:
-    """
-    Rendered appearance of a link.
+    """Rendered appearance of a link.
 
     Args:
         geometry: Shape primitive or mesh.
@@ -113,27 +145,34 @@ class Visual:
 
     geometry: Geometry
     origin: Origin = field(default_factory=Origin)
-    material: Optional[Material] = None
-    name: Optional[str] = None
+    material: Material | None = None
+    name: str | None = None
 
     def to_xml(self, indent: str = "") -> str:
+        """Return the '<visual>' XML block string.
+
+        Args:
+            indent: Leading whitespace prepended to each line.
+
+        Returns:
+            A multi-line '<visual>...</visual>' XML string.
+        """
         name_attr = f' name="{self.name}"' if self.name else ""
-        lines = [f'{indent}<visual{name_attr}>']
+        lines = [f"{indent}<visual{name_attr}>"]
         lines.append(self.origin.to_xml(indent + "    "))
-        lines.append(f'{indent}    <geometry>')
-        lines.append(f'{indent}        {self.geometry.to_xml()}')
-        lines.append(f'{indent}    </geometry>')
+        lines.append(f"{indent}    <geometry>")
+        lines.append(f"{indent}        {self.geometry.to_xml()}")
+        lines.append(f"{indent}    </geometry>")
         if self.material:
             # visuals reference material by name; full definition lives at robot level
             lines.append(f'{indent}    <material name="{self.material.name}"/>')
-        lines.append(f'{indent}</visual>')
+        lines.append(f"{indent}</visual>")
         return "\n".join(lines)
 
 
 @dataclass
 class Collision:
-    """
-    Collision shape of a link used by physics engines.
+    """Collision shape of a link used by physics engines.
 
     Args:
         geometry: Shape primitive or mesh.
@@ -143,18 +182,25 @@ class Collision:
 
     geometry: Geometry
     origin: Origin = field(default_factory=Origin)
-    name: Optional[str] = None
+    name: str | None = None
 
     def to_xml(self, indent: str = "") -> str:
-        name_attr = f' name="{self.name}"' if self.name else ""
-        lines = [f'{indent}<collision{name_attr}>']
-        lines.append(self.origin.to_xml(indent + "    "))
-        lines.append(f'{indent}    <geometry>')
-        lines.append(f'{indent}        {self.geometry.to_xml()}')
-        lines.append(f'{indent}    </geometry>')
-        lines.append(f'{indent}</collision>')
-        return "\n".join(lines)
+        """Return the '<collision>' XML block string.
 
+        Args:
+            indent: Leading whitespace prepended to each line.
+
+        Returns:
+            A multi-line '<collision>...</collision>' XML string.
+        """
+        name_attr = f' name="{self.name}"' if self.name else ""
+        lines = [f"{indent}<collision{name_attr}>"]
+        lines.append(self.origin.to_xml(indent + "    "))
+        lines.append(f"{indent}    <geometry>")
+        lines.append(f"{indent}        {self.geometry.to_xml()}")
+        lines.append(f"{indent}    </geometry>")
+        lines.append(f"{indent}</collision>")
+        return "\n".join(lines)
 
 
 @dataclass
@@ -177,48 +223,143 @@ class Inertial:
     origin: Origin = field(default_factory=Origin)
 
     @classmethod
-    def from_box(cls, mass: float, length: float, w: float, h: float,
-                 origin: Optional[Origin] = None,
-                 inertia_multiply: float = DEFAULT_INERTIA_MULTIPLY) -> "Inertial":
-        return cls(mass=mass, matrix=box_inertia(mass, length, w, h, inertia_multiply),
-                   origin=origin or Origin())
+    def from_box(
+        cls,
+        mass: float,
+        length: float,
+        w: float,
+        h: float,
+        origin: Origin | None = None,
+        inertia_multiply: float = DEFAULT_INERTIA_MULTIPLY,
+    ) -> "Inertial":
+        """Create an :class:'Inertial' for a solid box.
+
+        Args:
+            mass: Mass in kg.
+            length: Dimension along X (metres).
+            w: Dimension along Y (metres).
+            h: Dimension along Z (metres).
+            origin: Pose of the centre of mass; defaults to the link frame origin.
+            inertia_multiply: Scalar multiplier on all inertia components (default 1.0).
+
+        Returns:
+            An :class:'Inertial' with analytically computed box inertia.
+        """
+        return cls(
+            mass=mass,
+            matrix=box_inertia(mass, length, w, h, inertia_multiply),
+            origin=origin or Origin(),
+        )
 
     @classmethod
-    def from_sphere(cls, mass: float, radius: float,
-                    origin: Optional[Origin] = None,
-                    inertia_multiply: float = DEFAULT_INERTIA_MULTIPLY) -> "Inertial":
-        return cls(mass=mass, matrix=sphere_inertia(mass, radius, inertia_multiply),
-                   origin=origin or Origin())
+    def from_sphere(
+        cls,
+        mass: float,
+        radius: float,
+        origin: Origin | None = None,
+        inertia_multiply: float = DEFAULT_INERTIA_MULTIPLY,
+    ) -> "Inertial":
+        """Create an :class:'Inertial' for a solid sphere.
+
+        Args:
+            mass: Mass in kg.
+            radius: Sphere radius in metres.
+            origin: Pose of the centre of mass; defaults to the link frame origin.
+            inertia_multiply: Scalar multiplier on all inertia components (default 1.0).
+
+        Returns:
+            An :class:'Inertial' with analytically computed sphere inertia.
+        """
+        return cls(
+            mass=mass,
+            matrix=sphere_inertia(mass, radius, inertia_multiply),
+            origin=origin or Origin(),
+        )
 
     @classmethod
-    def from_cylinder(cls, mass: float, radius: float, length: float,
-                      origin: Optional[Origin] = None,
-                      inertia_multiply: float = DEFAULT_INERTIA_MULTIPLY) -> "Inertial":
-        return cls(mass=mass, matrix=cylinder_inertia(mass, radius, length, inertia_multiply),
-                   origin=origin or Origin())
+    def from_cylinder(
+        cls,
+        mass: float,
+        radius: float,
+        length: float,
+        origin: Origin | None = None,
+        inertia_multiply: float = DEFAULT_INERTIA_MULTIPLY,
+    ) -> "Inertial":
+        """Create an :class:'Inertial' for a solid cylinder.
+
+        Args:
+            mass: Mass in kg.
+            radius: Cylinder radius in metres.
+            length: Cylinder length (height) in metres.
+            origin: Pose of the centre of mass; defaults to the link frame origin.
+            inertia_multiply: Scalar multiplier on all inertia components (default 1.0).
+
+        Returns:
+            An :class:'Inertial' with analytically computed cylinder inertia.
+        """
+        return cls(
+            mass=mass,
+            matrix=cylinder_inertia(mass, radius, length, inertia_multiply),
+            origin=origin or Origin(),
+        )
 
     @classmethod
-    def from_geometry(cls, mass: float, geometry: Geometry,
-                      origin: Optional[Origin] = None,
-                      inertia_multiply: float = DEFAULT_INERTIA_MULTIPLY) -> "Inertial":
-        """Auto-compute inertia from a geometry object."""
+    def from_geometry(
+        cls,
+        mass: float,
+        geometry: Geometry,
+        origin: Origin | None = None,
+        inertia_multiply: float = DEFAULT_INERTIA_MULTIPLY,
+    ) -> "Inertial":
+        """Create an :class:'Inertial' by dispatching on the geometry type.
+
+        Delegates to :meth:'from_box', :meth:'from_sphere', or
+        :meth:'from_cylinder' based on the runtime type of *geometry*.
+
+        Args:
+            mass: Mass in kg.
+            geometry: A :class:'Box', :class:'Cylinder', or :class:'Sphere' instance.
+            origin: Pose of the centre of mass; defaults to the link frame origin.
+            inertia_multiply: Scalar multiplier on all inertia components (default 1.0).
+
+        Returns:
+            An :class:'Inertial' with analytically computed inertia.
+
+        Raises:
+            ValueError: If *geometry* is not a supported primitive type.
+        """
         if isinstance(geometry, Box):
-            return cls.from_box(mass, geometry.length, geometry.width,
-                                geometry.height, origin, inertia_multiply)
+            return cls.from_box(
+                mass,
+                geometry.length,
+                geometry.width,
+                geometry.height,
+                origin,
+                inertia_multiply,
+            )
         elif isinstance(geometry, Sphere):
             return cls.from_sphere(mass, geometry.radius, origin, inertia_multiply)
         elif isinstance(geometry, Cylinder):
-            return cls.from_cylinder(mass, geometry.radius, geometry.length,
-                                     origin, inertia_multiply)
+            return cls.from_cylinder(
+                mass, geometry.radius, geometry.length, origin, inertia_multiply
+            )
         raise ValueError(
             f"Cannot auto-compute inertia for {type(geometry).__name__}. "
             "Provide an InertiaMatrix manually."
         )
 
     def to_xml(self, indent: str = "") -> str:
-        lines = [f'{indent}<inertial>']
+        """Return the '<inertial>' XML block string.
+
+        Args:
+            indent: Leading whitespace prepended to each line.
+
+        Returns:
+            A multi-line '<inertial>...</inertial>' XML string.
+        """
+        lines = [f"{indent}<inertial>"]
         lines.append(self.origin.to_xml(indent + "    "))
         lines.append(f'{indent}    <mass value="{self.mass}"/>')
         lines.append(self.matrix.to_xml(indent + "    "))
-        lines.append(f'{indent}</inertial>')
+        lines.append(f"{indent}</inertial>")
         return "\n".join(lines)

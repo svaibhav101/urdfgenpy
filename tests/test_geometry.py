@@ -29,4 +29,3 @@ class TestSphere:
 
     def test_shape(self):
         assert Sphere(1.0).shape == "sphere"
-

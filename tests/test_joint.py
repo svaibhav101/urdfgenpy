@@ -58,21 +58,30 @@ class TestJoint:
 
     def test_with_limit(self):
         j = Joint(
-            name="j", joint_type="revolute", parent="a", child="b",
+            name="j",
+            joint_type="revolute",
+            parent="a",
+            child="b",
             limit=JointLimit(lower=-1.0, upper=1.0, effort=5.0, velocity=1.0),
         )
         assert "<limit" in j.to_xml()
 
     def test_with_dynamics(self):
         j = Joint(
-            name="j", joint_type="revolute", parent="a", child="b",
+            name="j",
+            joint_type="revolute",
+            parent="a",
+            child="b",
             dynamics=JointDynamics(damping=1.0, friction=0.1),
         )
         assert "<dynamics" in j.to_xml()
 
     def test_with_mimic(self):
         j = Joint(
-            name="j", joint_type="revolute", parent="a", child="b",
+            name="j",
+            joint_type="revolute",
+            parent="a",
+            child="b",
             mimic=JointMimic(joint="other"),
         )
         assert "<mimic" in j.to_xml()

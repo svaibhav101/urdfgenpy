@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 
 """
-    Geometry primitives for URDF visual and collision elements.
+Geometry primitives for URDF visual and collision elements.
 """
 
 from dataclasses import dataclass
@@ -9,8 +9,7 @@ from dataclasses import dataclass
 
 @dataclass
 class Box:
-    """
-    Axis-aligned rectangular box.
+    """Axis-aligned rectangular box.
 
     Args:
         length: Dimension along X (metres).
@@ -23,19 +22,18 @@ class Box:
     height: float
 
     def to_xml(self) -> str:
-        """Return the **<box>** XML element string."""
+        """Return the '<box>' XML element string."""
         return f'<box size="{self.length} {self.width} {self.height}"/>'
 
     @property
     def shape(self) -> str:
-        """Geometry type identifier: **box** """
+        """Geometry type identifier: 'box'"""
         return "box"
 
 
 @dataclass
 class Cylinder:
-    """
-    Cylinder whose symmetry axis is aligned with Z by default.
+    """Cylinder whose symmetry axis is aligned with Z by default.
 
     Args:
         radius: Radius (metres).
@@ -46,19 +44,18 @@ class Cylinder:
     length: float
 
     def to_xml(self) -> str:
-        """Return the **<cylinder>** XML element string."""
+        """Return the '<cylinder>' XML element string."""
         return f'<cylinder radius="{self.radius}" length="{self.length}"/>'
 
     @property
     def shape(self) -> str:
-        """Geometry type identifier: **cylinder** """
+        """Geometry type identifier: 'cylinder'"""
         return "cylinder"
 
 
 @dataclass
 class Sphere:
-    """
-    Sphere primitive.
+    """Sphere primitive.
 
     Args:
         radius: Radius (metres).
@@ -67,10 +64,10 @@ class Sphere:
     radius: float
 
     def to_xml(self) -> str:
-        """Return the **<sphere>** XML element string."""
+        """Return the '<sphere>' XML element string."""
         return f'<sphere radius="{self.radius}"/>'
 
     @property
     def shape(self) -> str:
-        """Geometry type identifier: **sphere** """
+        """Geometry type identifier: 'sphere'"""
         return "sphere"

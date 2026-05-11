@@ -36,8 +36,6 @@ class TestLink:
 
     def test_chaining(self):
         b = Box(0.1, 0.1, 0.1)
-        link = (Link("chain")
-                .add_visual(Visual(geometry=b))
-                .add_collision(Collision(geometry=b)))
+        link = Link("chain").add_visual(Visual(geometry=b)).add_collision(Collision(geometry=b))
         assert len(link.visuals) == 1
         assert len(link.collisions) == 1

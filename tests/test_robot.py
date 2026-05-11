@@ -117,7 +117,6 @@ class TestXacroExport:
         assert out.exists()
 
 
-
 class TestTreeString:
     def test_tree_contains_robot_name(self):
         tree = _make_robot().tree_string()

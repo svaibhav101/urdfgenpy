@@ -1,7 +1,6 @@
 #!/usr/bin/env python3
 
-"""
-Xacro exporter.
+"""Xacro exporter.
 
 Produces a self-contained xacro file with:
   - xacro property for INERTIA_MULTIPLY
@@ -10,6 +9,7 @@ Produces a self-contained xacro file with:
 
 # --- std
 from __future__ import annotations
+
 from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
@@ -63,6 +63,15 @@ class XacroExporter:
     """
 
     def export(self, robot: Robot) -> str:
+        """Render *robot* as a Xacro XML string.
+
+        Args:
+            robot: The :class:'~urdfgenpy.Robot' to serialize.
+
+        Returns:
+            A complete Xacro XML string with inertia macro definitions,
+            the XML declaration, and the '<robot>' root element.
+        """
         lines = [
             _HEADER,
             f'<robot name="{robot.name}" {_XMLNS}>',
