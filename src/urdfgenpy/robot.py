@@ -105,7 +105,7 @@ class Robot:
 
     def tree_string(self) -> str:
         """Return the kinematic chain as a plain-text ASCII tree."""
-        
+
         children: dict = {n: [] for n in self._links}
         child_set: set = set()
         for j in self._joints.values():
@@ -149,3 +149,63 @@ class Robot:
         """Write the plain-text kinematic tree to a file."""
         with open(output_path, "w") as f:
             f.write(self.tree_string())
+
+
+    def print_tree(self) -> None:
+        """Print the kinematic chain as a coloured ASCII tree from root to leaves."""
+        # --- palette ---
+        RS  = "\033[0m"          # reset
+        TREE= "\033[90m"         # dark gray   --> connectors / pipes
+        RNM = "\033[1;97m"       # bold white  --> robot name
+        LNM = "\033[1;92m"       # bold bright --> green ( link name )
+        LBL = "\033[2;37m"       # dim white   --> "Link:" / "Joint:" labels
+        JNM = "\033[97m"         # white       --> joint name
+        GEO = "\033[2;33m"       # dim yellow  --> geometry hint
+
+        JTYPE_COLOR = {
+            "fixed":      "\033[90m",    # dark gray  --> immovable
+            "revolute":   "\033[96m",    # cyan       --> rotational
+            "continuous": "\033[94m",    # blue       --> continuous rotation
+            "prismatic":  "\033[95m",    # magenta    --> linear
+            "floating":   "\033[91m",    # red        --> unconstrained
+            "planar":     "\033[91m",    # red        --> unconstrained
+        }
+
+        children: dict = {n: [] for n in self._links}
+        child_set: set = set()
+        for j in self._joints.values():
+            children[j.parent].append((j.name, j.child))
+            child_set.add(j.child)
+
+        roots = [n for n in self._links if n not in child_set]
+
+        def _geom(link_name: str) -> str:
+            lnk = self._links[link_name]
+            return f" {GEO}({lnk.visuals[0].geometry.shape}){RS}" if lnk.visuals else ""
+
+        def render(link_name: str, prefix: str) -> None:
+            for i, (jname, cname) in enumerate(children[link_name]):
+                is_last      = i == len(children[link_name]) - 1
+                child_has_ch = bool(children[cname])
+                use_tee = (not is_last) or child_has_ch
+                conn = f"{TREE}+--{RS}" if use_tee else f"{TREE}\\--{RS}"
+
+                joint  = self._joints[jname]
+                jtype  = joint.joint_type
+                jcolor = JTYPE_COLOR.get(jtype, "\033[97m")
+
+                print(f"{prefix}{conn} {LBL}joint{RS} {JNM}{jname}{RS}  {jcolor}[{jtype}]{RS}")
+                print(f"{prefix}{TREE}{'|' if use_tee else ' '}   \\--{RS} {LBL}link{RS}  {LNM}{cname}{RS}{_geom(cname)}")
+
+                if child_has_ch:
+                    print(f"{prefix}{TREE}{'|' if use_tee else ' '}{RS}")
+                    render(cname, prefix + (f"{TREE}|{RS}   " if use_tee else "    ") + "    ")
+                elif not is_last:
+                    print(f"{prefix}{TREE}|{RS}")
+
+        print(f"\n{RNM}Robot: {self.name}{RS}\n")
+        for root in roots:
+            print(f"{TREE}*{RS}  {LBL}link{RS}  {LNM}{root}{RS}{_geom(root)}")
+            if children[root]:
+                print(f"{TREE}|{RS}")
+                render(root, "")

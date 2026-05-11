@@ -197,3 +197,5 @@ print(f"Joints: {len(robot.joints)}")
 print(f"urdf saved: {out_dir}")
 print(f"xacro saved: {out_dir}")
 print(f"tree saved: {out_dir}")
+
+robot.print_tree()
