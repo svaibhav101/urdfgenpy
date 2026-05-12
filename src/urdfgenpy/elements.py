@@ -73,7 +73,7 @@ class Origin:
         elif isinstance(geometry, Cylinder):
             z = geometry.length / 2.0
         elif isinstance(geometry, Sphere):
-            z = geometry.radius
+            z = geometry.radius / 2.0
         else:
             raise ValueError(
                 f"Origin.above() does not support {type(geometry).__name__}. "
