@@ -1,0 +1,157 @@
+<?xml version="1.0"?>
+<robot name="ptu" xmlns:xacro="http://www.ros.org/wiki/xacro">
+
+    <xacro:property name="INERTIA_MULTIPLY" value="1.0"/>
+
+    <xacro:macro name="box_inertia" params="m l w h xyz rpy">
+        <inertial>
+            <origin xyz="${xyz}" rpy="${rpy}"/>
+            <mass value="${m}"/>
+            <inertia
+                ixx="${INERTIA_MULTIPLY * (m/12.0) * (w*w + h*h)}" ixy="0.0" ixz="0.0"
+                iyy="${INERTIA_MULTIPLY * (m/12.0) * (l*l + h*h)}" iyz="0.0"
+                izz="${INERTIA_MULTIPLY * (m/12.0) * (l*l + w*w)}"/>
+        </inertial>
+    </xacro:macro>
+
+    <xacro:macro name="sphere_inertia" params="m r xyz rpy">
+        <inertial>
+            <origin xyz="${xyz}" rpy="${rpy}"/>
+            <mass value="${m}"/>
+            <inertia
+                ixx="${INERTIA_MULTIPLY * (2.0/5.0) * m * r*r}" ixy="0.0" ixz="0.0"
+                iyy="${INERTIA_MULTIPLY * (2.0/5.0) * m * r*r}" iyz="0.0"
+                izz="${INERTIA_MULTIPLY * (2.0/5.0) * m * r*r}"/>
+        </inertial>
+    </xacro:macro>
+
+    <xacro:macro name="cylinder_inertia" params="m r h xyz rpy">
+        <inertial>
+            <origin xyz="${xyz}" rpy="${rpy}"/>
+            <mass value="${m}"/>
+            <inertia
+                ixx="${INERTIA_MULTIPLY * (m/12.0) * (3.0*r*r + h*h)}" ixy="0.0" ixz="0.0"
+                iyy="${INERTIA_MULTIPLY * (m/12.0) * (3.0*r*r + h*h)}" iyz="0.0"
+                izz="${INERTIA_MULTIPLY * (m/2.0) * r*r}"/>
+        </inertial>
+    </xacro:macro>
+
+    <material name="charcoal">
+        <color rgba="0.22 0.22 0.25 1.0"/>
+    </material>
+    <material name="dark_grey">
+        <color rgba="0.35 0.35 0.38 1.0"/>
+    </material>
+    <material name="amber">
+        <color rgba="1.0 0.55 0.0 1.0"/>
+    </material>
+
+    <link name="base_plate">
+        <inertial>
+            <origin xyz="0.0 0.0 0.0125" rpy="0.0 0.0 0.0"/>
+            <mass value="0.8"/>
+            <inertia ixx="0.00134833" ixy="0" ixz="0" iyy="0.00134833" iyz="0" izz="0.00261333"/>
+        </inertial>
+        <visual>
+            <origin xyz="0.0 0.0 0.0125" rpy="0.0 0.0 0.0"/>
+            <geometry>
+                <box size="0.14 0.14 0.025"/>
+            </geometry>
+            <material name="charcoal"/>
+        </visual>
+        <collision>
+            <origin xyz="0.0 0.0 0.0125" rpy="0.0 0.0 0.0"/>
+            <geometry>
+                <box size="0.14 0.14 0.025"/>
+            </geometry>
+        </collision>
+    </link>
+
+    <link name="pan_link">
+        <inertial>
+            <origin xyz="0.0 0.0 0.035" rpy="0.0 0.0 0.0"/>
+            <mass value="0.18"/>
+            <inertia ixx="0.00010878" ixy="0" ixz="0" iyy="0.00010878" iyz="0" izz="7.056e-05"/>
+        </inertial>
+        <visual>
+            <origin xyz="0.0 0.0 0.035" rpy="0.0 0.0 0.0"/>
+            <geometry>
+                <cylinder radius="0.028" length="0.07"/>
+            </geometry>
+            <material name="dark_grey"/>
+        </visual>
+        <collision>
+            <origin xyz="0.0 0.0 0.035" rpy="0.0 0.0 0.0"/>
+            <geometry>
+                <cylinder radius="0.028" length="0.07"/>
+            </geometry>
+        </collision>
+    </link>
+
+    <link name="tilt_link">
+        <inertial>
+            <origin xyz="0.045 0.0 0.0" rpy="0.0 0.0 0.0"/>
+            <mass value="0.12"/>
+            <inertia ixx="5e-05" ixy="0" ixz="0" iyy="0.000106" iyz="0" izz="0.000106"/>
+        </inertial>
+        <visual>
+            <origin xyz="0.045 0.0 0.0" rpy="0.0 0.0 0.0"/>
+            <geometry>
+                <box size="0.09 0.05 0.05"/>
+            </geometry>
+            <material name="amber"/>
+        </visual>
+        <collision>
+            <origin xyz="0.045 0.0 0.0" rpy="0.0 0.0 0.0"/>
+            <geometry>
+                <box size="0.09 0.05 0.05"/>
+            </geometry>
+        </collision>
+    </link>
+
+    <link name="lens">
+        <inertial>
+            <origin xyz="0.0 0.0 0.0" rpy="0.0 0.0 0.0"/>
+            <mass value="0.03"/>
+            <inertia ixx="5.808e-06" ixy="0" ixz="0" iyy="5.808e-06" iyz="0" izz="5.808e-06"/>
+        </inertial>
+        <visual>
+            <origin xyz="0.0 0.0 0.0" rpy="0.0 0.0 0.0"/>
+            <geometry>
+                <sphere radius="0.022"/>
+            </geometry>
+            <material name="charcoal"/>
+        </visual>
+        <collision>
+            <origin xyz="0.0 0.0 0.0" rpy="0.0 0.0 0.0"/>
+            <geometry>
+                <sphere radius="0.022"/>
+            </geometry>
+        </collision>
+    </link>
+
+    <joint name="pan_joint" type="revolute">
+        <origin xyz="0.0 0.0 0.025" rpy="0.0 0.0 0.0"/>
+        <parent link="base_plate"/>
+        <child link="pan_link"/>
+        <axis xyz="0.0 0.0 1.0"/>
+        <limit lower="-3.141592653589793" upper="3.141592653589793" effort="10.0" velocity="1.5"/>
+        <dynamics damping="0.3" friction="0.02"/>
+    </joint>
+
+    <joint name="tilt_joint" type="revolute">
+        <origin xyz="0.0 0.0 0.07" rpy="0.0 0.0 0.0"/>
+        <parent link="pan_link"/>
+        <child link="tilt_link"/>
+        <axis xyz="0.0 1.0 0.0"/>
+        <limit lower="-1.5707963267948966" upper="0.0" effort="6.0" velocity="1.5"/>
+        <dynamics damping="0.2" friction="0.01"/>
+    </joint>
+
+    <joint name="lens_joint" type="fixed">
+        <origin xyz="0.09 0.0 0.0" rpy="0.0 0.0 0.0"/>
+        <parent link="tilt_link"/>
+        <child link="lens"/>
+    </joint>
+
+</robot>

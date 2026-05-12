@@ -1,0 +1,13 @@
+
+Robot: ptu
+
+*  link  base_plate (box)
+|
++-- joint pan_joint  [revolute]
+|   \-- link  pan_link (cylinder)
+|
+|       +-- joint tilt_joint  [revolute]
+|       |   \-- link  tilt_link (box)
+|       |
+|       |       \-- joint lens_joint  [fixed]
+|       |           \-- link  lens (sphere)
