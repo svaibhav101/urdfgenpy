@@ -1,3 +1,5 @@
+#!/usr/bin/env python3
+
 """
 hobu --> differential-drive mobile robot.
 
@@ -8,7 +10,7 @@ Kinematic chain:
                  -> caster_wheel_link (fixed)
 
 Demonstrates:
-  - Origin.wheel()       orient a cylinder as a rolling wheel (-π/2 roll)
+  - Origin.wheel()       orient a cylinder as a rolling wheel (-pi/2 roll)
   - Origin.above()       lift a box so its bottom face sits at z=0
   - Inertial.from_*      per-shape inertia factory methods
   - inertia_multiply     scale factor for inertia (e.g. for safety margins)
@@ -60,7 +62,7 @@ base_link.set_inertial(
 
 # ---------------------------------------------------------------------------
 # wheel links  --> cylinder r=0.1, len=0.05, mass 0.3 kg
-# Origin.wheel() rotates -π/2 around X so the disc lies in XZ (axis → Y).
+# Origin.wheel() rotates -pi/2 around X so the disc lies in XZ (axis -> Y).
 # ---------------------------------------------------------------------------
 wheel_geom   = Cylinder(radius=0.1, length=0.05)
 wheel_origin = Origin.wheel()
@@ -95,7 +97,7 @@ caster_wheel_link.set_inertial(
 )
 
 # -----------------------------------------
-# base_footprint  --> virtual root link 
+# base_footprint  --> virtual root link
 # -----------------------------------------
 base_footprint = Link("base_footprint")
 

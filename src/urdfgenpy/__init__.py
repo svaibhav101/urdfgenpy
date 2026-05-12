@@ -2,6 +2,7 @@ from .elements import Collision, Inertial, Material, Origin, Visual
 from .exporters import URDFExporter, XacroExporter
 from .geometry import Box, Cylinder, Sphere
 from .inertia import (
+    DEFAULT_INERTIA_MULTIPLY,
     InertiaMatrix,
     box_inertia,
     cylinder_inertia,
@@ -21,19 +22,16 @@ __all__ = [
     "Box",
     "Cylinder",
     "Sphere",
-    "Mesh",
     "Origin",
     "Material",
     "Visual",
     "Collision",
     "Inertial",
     "InertiaMatrix",
+    "DEFAULT_INERTIA_MULTIPLY",
     "box_inertia",
     "sphere_inertia",
     "cylinder_inertia",
-    "DEFAULT_INERTIA_MULTIPLY",
     "URDFExporter",
     "XacroExporter",
-    "Origin.above(geometry)",  # lift geometry so bottom sits at z=0
-    "Origin.wheel()",  # (-pi/2) roll to orient cylinder as a wheel
 ]

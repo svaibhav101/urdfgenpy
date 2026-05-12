@@ -23,7 +23,7 @@ class TestInertiaMatrix:
 
 class TestBoxInertia:
     def test_uniform_cube(self):
-        # 1 kg cube, side=1 → each diagonal = 1/6
+        # 1 kg cube, side=1 -> each diagonal = 1/6
         m = box_inertia(1.0, 1.0, 1.0, 1.0)
         expected = 1.0 / 6.0
         assert math.isclose(m.ixx, expected, rel_tol=1e-9)

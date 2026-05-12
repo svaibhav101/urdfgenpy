@@ -27,18 +27,18 @@ import os
 
 from urdfgenpy import (
     Box,
-    Cylinder,
-    Sphere,
-    Origin,
     Collision,
+    Cylinder,
     Inertial,
-    Material,
-    Visual,
-    Link,
     Joint,
     JointDynamics,
     JointLimit,
+    Link,
+    Material,
+    Origin,
     Robot,
+    Sphere,
+    Visual,
 )
 
 # ------------
@@ -80,7 +80,7 @@ shoulder_link.set_inertial(
 
 # ---------------------------------------------------------------------------
 # upper_arm_link  : horizontal cylinder extending along X (pitch joint; axis Y)
-# The cylinder's native axis is Z, so rotate -π/2 around Y to align it with X.
+# The cylinder's native axis is Z, so rotate -pi/2 around Y to align it with X.
 # ---------------------------------------------------------------------------
 upper_arm_cyl = Cylinder(radius=0.03, length=0.20)
 upper_arm_origin = Origin(xyz=(0.10, 0.0, 0.0), rpy=(0.0, -math.pi / 2, 0.0))

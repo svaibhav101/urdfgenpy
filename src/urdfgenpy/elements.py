@@ -83,9 +83,9 @@ class Origin:
 
     @classmethod
     def wheel(cls, xy: tuple[float, float] = (0.0, 0.0), z: float = 0.0) -> "Origin":
-        """Return an origin with −π/2 roll so a URDF cylinder becomes a wheel.
+        """Return an origin with −pi/2 roll so a URDF cylinder becomes a wheel.
 
-        URDF cylinders default to the Z axis; applying −π/2 roll reorients the
+        URDF cylinders default to the Z axis; applying −pi/2 roll reorients the
         symmetry axis to Y so the wheel disc lies in the XZ plane and rolls in
         the X direction.
 
@@ -94,14 +94,14 @@ class Origin:
             z: Height of the wheel centre in metres (default '0').
 
         Returns:
-            An :class:'Origin' with 'rpy = (-π/2, 0, 0)'.
+            An :class:'Origin' with 'rpy = (-pi/2, 0, 0)'.
         """
         return cls(xyz=(xy[0], xy[1], z), rpy=(-math.pi / 2.0, 0.0, 0.0))
 
 
 @dataclass
 class Material:
-    """Visual material — colour or texture.
+    """Visual material - colour or texture.
 
     Args:
         name: Unique material name referenced by :class:'Visual'.
