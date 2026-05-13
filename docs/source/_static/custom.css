@@ -1,0 +1,49 @@
+/* -------------------------------------------------
+   Stable layout across pages
+-------------------------------------------------- */
+
+/* Prevent page width jumping from scrollbar changes */
+html {
+    overflow-y: scroll;
+}
+
+/* Consistent content width */
+:root {
+    --content-width: 56rem;
+}
+
+/* Force stable content sizing */
+.content {
+    width: 100%;
+    max-width: var(--content-width);
+    margin: 0 auto;
+}
+
+/* Prevent code blocks from stretching layout */
+.highlight pre {
+    overflow-x: auto;
+}
+
+/* Better table behavior */
+table.docutils {
+    display: block;
+    overflow-x: auto;
+}
+
+/* -------------------------------------------------
+   API styling
+-------------------------------------------------- */
+
+/* Make parameter names stand out */
+.sig-param .n {
+    font-weight: 600;
+}
+
+/* Visual separation between API members */
+dl.py.method,
+dl.py.function,
+dl.py.class {
+    border-top: 1px solid var(--color-background-border);
+    padding-top: 0.75rem;
+    margin-top: 1rem;
+}
