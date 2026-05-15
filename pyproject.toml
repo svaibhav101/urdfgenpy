@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "urdfgenpy"
-version = "0.3.0"
+version = "0.4.0"
 description = "Programmatically generate URDF and Xacro robot description files"
 readme = "README.md"
 authors = [{ name = "Vaibhav Shende", email = "48331600+svaibhav101@users.noreply.github.com" }]
