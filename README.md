@@ -1,6 +1,10 @@
 # urdfgenpy
 
+[![Documentation](https://img.shields.io/badge/docs-readthedocs-blue)](https://urdfgenpy.readthedocs.io)
+
 A Python library for programmatically generating [URDF](http://wiki.ros.org/urdf) (Unified Robot Description Format) and [Xacro](http://wiki.ros.org/xacro) robot description files.
+
+**Documentation:** https://urdfgenpy.readthedocs.io
 
 ## Features
 
@@ -157,7 +161,11 @@ Run with coverage:
 pytest --cov=urdfgenpy --cov-report=term-missing
 ```
 
-## Building Documentation
+## Documentation
+
+Full documentation is available at https://urdfgenpy.readthedocs.io
+
+To build locally:
 
 ```bash
 pip3 install -e ".[docs]"

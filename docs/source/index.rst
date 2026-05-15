@@ -3,6 +3,10 @@ urdfgenpy
 
 **Programmatically generate URDF and Xacro robot description files in pure Python.**
 
+.. raw:: html
+
+   <p><strong>Documentation:</strong> <a href="https://urdfgenpy.readthedocs.io">https://urdfgenpy.readthedocs.io</a></p>
+
 
 ``urdfgenpy`` lets you build valid robot description files from Python objects
 - links, joints, geometry, inertia - and export them to ``.urdf`` or

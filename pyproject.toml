@@ -32,6 +32,7 @@ classifiers = [
 
 [project.urls]
 Homepage = "https://github.com/svaibhav101/urdfgenpy"
+Documentation = "https://urdfgenpy.readthedocs.io"
 "Bug Tracker" = "https://github.com/svaibhav101/urdfgenpy/issues"
 
 
